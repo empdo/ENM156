@@ -1,0 +1,5 @@
+audiomentations
+librosa
+matplotlib
+numpy
+soundfile

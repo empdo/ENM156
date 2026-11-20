@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Generated data (recreate with augment_dataset.py)
+augmented_samples/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
