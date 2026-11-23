@@ -10,6 +10,8 @@ from audiomentations import AddBackgroundNoise, Gain, Shift
 
 SAMPLE_RATE = 16000
 N_MELS = 64
+CLIP_SECONDS = 2.0  # every clip is padded/cropped to this, so all spectrograms get the same shape
+MIN_DB = -80.0      # power_to_db floor, used to scale spectrograms to 0..1
 
 
 def load_audio(path, sr=SAMPLE_RATE):
@@ -23,6 +25,15 @@ def load_audio(path, sr=SAMPLE_RATE):
     ]
     raw = subprocess.run(cmd, capture_output=True, check=True).stdout
     return np.frombuffer(raw, dtype=np.float32)
+
+
+def fix_length(y, sr=SAMPLE_RATE, seconds=CLIP_SECONDS):
+    return librosa.util.fix_length(y, size=int(sr * seconds))
+
+
+def normalize(S_db, min_db=MIN_DB):
+    # dB values (min_db..0) -> 0..1, the range the model gets as input
+    return np.clip((S_db - min_db) / -min_db, 0.0, 1.0).astype(np.float32)
 
 
 def mel_spectrogram(y, sr=SAMPLE_RATE, n_mels=N_MELS):
