@@ -1,4 +1,5 @@
 import argparse
+import random
 import subprocess
 from pathlib import Path
 
@@ -51,9 +52,19 @@ def change_gain(y, sr, min_gain_db=-6.0, max_gain_db=6.0):
     transform = Gain(min_gain_db=min_gain_db, max_gain_db=max_gain_db, p=1.0)
     return transform(samples=y, sample_rate=sr)
 
-def time_shift(y, sr, max_shift=0.2):
-    transform = Shift(min_shift=-max_shift, max_shift=max_shift, shift_unit="fraction", rollover=False, p=1.0)
+def time_shift(y, sr, max_shift=0.1):
+    # Only moves the sound earlier, so the zeros end up at the end like the real padding
+    # (zeros at the start never happen in the real data)
+    transform = Shift(min_shift=-max_shift, max_shift=0.0, shift_unit="fraction", rollover=False, p=1.0)
     return transform(samples=y, sample_rate=sr)
+
+def mask_end(y, max_fraction=0.35):
+    # Zeroes the end of the clip, like the zero padding in the *_padded files, so that
+    # padding shows up in every class and the model can't use it to tell classes apart
+    cut = int(len(y) * (1 - random.uniform(0, max_fraction)))
+    y = y.copy()
+    y[cut:] = 0
+    return y
 
 def save_image(S_db, out_path, sr=SAMPLE_RATE):
     fig, ax = plt.subplots(figsize=(10, 4))
@@ -72,8 +83,8 @@ def main():
     parser.add_argument("--noise", type=Path, help="folder of background noise files (wav/flac/mp3/ogg)")
     parser.add_argument("--min-snr", type=float, default=3.0, help="min SNR in dB (default 3)")
     parser.add_argument("--max-snr", type=float, default=30.0, help="max SNR in dB (default 30)")
-    parser.add_argument("--gain", type=float, default=6.0, help="max gain change in dB, +/- (default 6, 0 = off)")
-    parser.add_argument("--shift", type=float, default=0.2, help="max time shift as fraction of length (default 0.2, 0 = off)")
+    parser.add_argument("--gain", type=float, default=0.0, help="max gain change in dB, +/- (default 0 = off)")
+    parser.add_argument("--shift", type=float, default=0.1, help="max time shift earlier, as fraction of length (default 0.1, 0 = off)")
     args = parser.parse_args()
     in_path = args.input
     out_path = args.output or in_path.with_suffix(".png")

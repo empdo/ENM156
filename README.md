@@ -41,6 +41,8 @@ files = d["files"]      # source wav of each row
 | `--overwrite` | off | replace an existing `augmented_audio/` |
 | `--noise DIR` | off | folder with background noise files to mix in |
 | `--min-snr` / `--max-snr` | 3 / 30 | noise level in dB (lower = more noise) |
-| `--pitch` | 2 | max pitch shift in semitones (0 = off) |
-| `--shift` | 0.2 | max time shift as fraction of the clip (0 = off) |
-| `--gain` | 6 | max volume change in dB (0 = off) |
+| `--pitch` | 0.5 | max pitch shift in semitones (0 = off) |
+| `--shift` | 0.1 | max time shift earlier, as fraction of the clip (0 = off) |
+| `--gain` | 0 | max volume change in dB (0 = off, has no effect on the spectrograms since they are scaled to their own max) |
+| `--mask` | 0.35 | max fraction of the clip end set to zero, so zero padding appears in every class (0 = off) |
+| `--mask-prob` | 0.5 | share of augmented copies that get masked |

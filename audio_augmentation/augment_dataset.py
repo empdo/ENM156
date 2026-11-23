@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 
 from mel_spectrogram import (
-    SAMPLE_RATE, add_background_noise, change_gain, fix_length, load_audio, mel_spectrogram, normalize,
+    SAMPLE_RATE, add_background_noise, change_gain, fix_length, load_audio, mask_end, mel_spectrogram, normalize,
     pitch_shift, save_image, time_shift,
 )
 
@@ -74,6 +74,9 @@ def augment(y, sr, args):
     peak = np.abs(y).max()
     if peak > 1.0:
         y = y / peak
+    # Last, so the masked part is pure zeros like the real padding
+    if args.mask and random.random() < args.mask_prob:
+        y = mask_end(y, args.mask)
     return y
 
 
@@ -97,9 +100,12 @@ def main():
     parser.add_argument("--test", type=float, default=0.15, help="fraction of each class used for testing (default 0.15)")
     parser.add_argument("--seed", type=int, default=0, help="random seed, same seed = same split and augmentations")
     parser.add_argument("--copies", type=int, default=5, help="augmented copies per training file (default 5)")
-    parser.add_argument("--pitch", type=float, default=2.0, help="max pitch shift in semitones, +/- (default 2, 0 = off)")
-    parser.add_argument("--shift", type=float, default=0.2, help="max time shift as fraction of length (default 0.2, 0 = off)")
-    parser.add_argument("--gain", type=float, default=6.0, help="max gain change in dB, +/- (default 6, 0 = off)")
+    parser.add_argument("--pitch", type=float, default=0.5, help="max pitch shift in semitones, +/- (default 0.5, 0 = off)")
+    parser.add_argument("--shift", type=float, default=0.1, help="max time shift earlier, as fraction of length (default 0.1, 0 = off)")
+    # Off by default: the spectrogram is scaled to its own max (ref=np.max), so volume changes have no effect on it
+    parser.add_argument("--gain", type=float, default=0.0, help="max gain change in dB, +/- (default 0 = off)")
+    parser.add_argument("--mask", type=float, default=0.35, help="max fraction of the clip end set to zero (default 0.35, 0 = off)")
+    parser.add_argument("--mask-prob", type=float, default=0.5, help="share of augmented copies that get masked (default 0.5)")
     parser.add_argument("--noise", type=Path, help="folder of background noise files (wav/flac/mp3/ogg)")
     parser.add_argument("--min-snr", type=float, default=3.0, help="min SNR in dB (default 3)")
     parser.add_argument("--max-snr", type=float, default=30.0, help="max SNR in dB (default 30)")
