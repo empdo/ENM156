@@ -4,8 +4,8 @@ example:
 
     server = StatusServer(port=8765)
     server.start()              # runs in a background thread
-    server.set_status("fault1")
-    server.set_status("normal")
+    server.fault("fault1")
+    server.fault("normal")
     server.stop()
 """
 
