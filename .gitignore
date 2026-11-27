@@ -8,7 +8,7 @@ venv/
 env/
 
 # Generated data (recreate with augment_dataset.py)
-augmented_samples/
+augmented_audio/
 
 # Editors / OS
 .vscode/
