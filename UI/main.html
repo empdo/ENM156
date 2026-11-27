@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Robot Status</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      font-family: system-ui, sans-serif;
+      background: #1e1e1e;
+      color: #eee;
+    }
+    #status {
+      width: min(90vw, 480px);
+      padding: 48px 16px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: bold;
+      background: #555;
+      transition: background 0.3s;
+    }
+    #status.normal { background: #2e7d32; }
+    #status.fault1 { background: #ef6c00; }
+    #status.fault2 { background: #c62828; }
+    #connection { font-size: 0.9rem; color: #aaa; }
+    #connection.ok { color: #81c784; }
+    form { display: flex; gap: 8px; }
+    input, button { font-size: 1rem; padding: 6px 10px; }
+  </style>
+</head>
+<body>
+  <div id="status">Waiting…</div>
+  <div id="connection">Disconnected</div>
+  <form id="addr-form">
+    <input id="addr" size="28" placeholder="ws://raspberrypi.local:8765">
+    <button type="submit">Connect</button>
+  </form>
+
+  <script>
+    const LABELS = {
+      normal: "Normal operation",
+      fault1: "Fault 1",
+      fault2: "Fault 2",
+    };
+
+    const statusEl = document.getElementById("status");
+    const connEl = document.getElementById("connection");
+    const addrEl = document.getElementById("addr");
+
+    let url = localStorage.getItem("piUrl") || "ws://raspberrypi.local:8765";
+    addrEl.value = url;
+
+    let ws = null;
+    let reconnectTimer = null;
+
+    function connect() {
+      clearTimeout(reconnectTimer);
+      if (ws) { ws.onclose = null; ws.close(); }
+
+      connEl.textContent = `Connecting to ${url}…`;
+      connEl.className = "";
+      ws = new WebSocket(url);
+
+      ws.onopen = () => {
+        connEl.textContent = `Connected to ${url}`;
+        connEl.className = "ok";
+      };
+
+      ws.onmessage = (event) => {
+        const { status } = JSON.parse(event.data);
+        statusEl.textContent = LABELS[status] || `Unknown: ${status}`;
+        statusEl.className = status;
+      };
+
+      ws.onclose = () => {
+        connEl.textContent = "Disconnected – retrying every 2 s";
+        connEl.className = "";
+        statusEl.textContent = "No connection";
+        statusEl.className = "";
+        reconnectTimer = setTimeout(connect, 2000);
+      };
+    }
+
+    document.getElementById("addr-form").onsubmit = (e) => {
+      e.preventDefault();
+      url = addrEl.value.trim();
+      localStorage.setItem("piUrl", url);
+      connect();
+    };
+
+    connect();
+  </script>
+</body>
+</html>
