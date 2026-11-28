@@ -1,0 +1,174 @@
+{
+  "model": "ExtraTrees baseline on pooled log-mel spectrogram features",
+  "seed": 0,
+  "data_source": "/mnt/data/enm_work/ENM156-main/audio_augmentation/audio_samples",
+  "classes": [
+    "felm4",
+    "korrm4",
+    "medm8",
+    "utanm8"
+  ],
+  "counts": {
+    "train": {
+      "felm4": 62,
+      "korrm4": 44,
+      "medm8": 59,
+      "utanm8": 62
+    },
+    "val": {
+      "felm4": 13,
+      "korrm4": 10,
+      "medm8": 13,
+      "utanm8": 14
+    },
+    "test": {
+      "felm4": 14,
+      "korrm4": 8,
+      "medm8": 12,
+      "utanm8": 13
+    }
+  },
+  "caveats": [
+    "felm4: only 1 source recording(s); validation/test share origin with training"
+  ],
+  "evaluation": {
+    "val": {
+      "accuracy": 0.98,
+      "balanced_accuracy": 0.9821428571428572,
+      "confusion_matrix": [
+        [
+          13,
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          10,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          13,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          13
+        ]
+      ],
+      "classification_report": {
+        "felm4": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 13.0
+        },
+        "korrm4": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 10.0
+        },
+        "medm8": {
+          "precision": 0.9285714285714286,
+          "recall": 1.0,
+          "f1-score": 0.9629629629629629,
+          "support": 13.0
+        },
+        "utanm8": {
+          "precision": 1.0,
+          "recall": 0.9285714285714286,
+          "f1-score": 0.9629629629629629,
+          "support": 14.0
+        },
+        "accuracy": 0.98,
+        "macro avg": {
+          "precision": 0.9821428571428572,
+          "recall": 0.9821428571428572,
+          "f1-score": 0.9814814814814814,
+          "support": 50.0
+        },
+        "weighted avg": {
+          "precision": 0.9814285714285714,
+          "recall": 0.98,
+          "f1-score": 0.98,
+          "support": 50.0
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.8723404255319149,
+      "balanced_accuracy": 0.8646978021978022,
+      "confusion_matrix": [
+        [
+          11,
+          3,
+          0,
+          0
+        ],
+        [
+          2,
+          6,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          12,
+          0
+        ],
+        [
+          0,
+          0,
+          1,
+          12
+        ]
+      ],
+      "classification_report": {
+        "felm4": {
+          "precision": 0.8461538461538461,
+          "recall": 0.7857142857142857,
+          "f1-score": 0.8148148148148148,
+          "support": 14.0
+        },
+        "korrm4": {
+          "precision": 0.6666666666666666,
+          "recall": 0.75,
+          "f1-score": 0.7058823529411765,
+          "support": 8.0
+        },
+        "medm8": {
+          "precision": 0.9230769230769231,
+          "recall": 1.0,
+          "f1-score": 0.96,
+          "support": 12.0
+        },
+        "utanm8": {
+          "precision": 1.0,
+          "recall": 0.9230769230769231,
+          "f1-score": 0.96,
+          "support": 13.0
+        },
+        "accuracy": 0.8723404255319149,
+        "macro avg": {
+          "precision": 0.858974358974359,
+          "recall": 0.8646978021978022,
+          "f1-score": 0.8601742919389979,
+          "support": 47.0
+        },
+        "weighted avg": {
+          "precision": 0.8777959629023458,
+          "recall": 0.8723404255319149,
+          "f1-score": 0.873499281509294,
+          "support": 47.0
+        }
+      }
+    }
+  }
+}
